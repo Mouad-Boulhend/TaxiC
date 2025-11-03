@@ -23,284 +23,507 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
 import pub.devrel.easypermissions.EasyPermissions
 
 /**
- * Fragment that displays the taxi meter with Google Maps
+ * ===========================================
+ * TAXI METER FRAGMENT
+ * ===========================================
+ *
+ * This is the main screen of our app.
+ * It shows:
+ * - Google Map with current location
+ * - Distance, Time, and Fare
+ * - Start/Stop button
+ * - Profile button
+ *
+ * WHAT IT DOES:
+ * 1. Shows a map
+ * 2. Gets GPS location updates
+ * 3. Sends location to ViewModel
+ * 4. Displays updated distance/time/fare
  */
 class TaxiMeterFragment : Fragment(), OnMapReadyCallback {
 
+    // ===========================================
+    // CONSTANTS
+    // ===========================================
+
     companion object {
         private const val TAG = "TaxiMeterFragment"
-        private const val UPDATE_INTERVAL = 3000L // 3 seconds
-        private const val FASTEST_INTERVAL = 1000L // 1 second
-        private const val DEFAULT_ZOOM = 16f
+
+        // How often to request location updates (milliseconds)
+        private const val LOCATION_UPDATE_INTERVAL = 2000L  // 2 seconds
+
+        // Fastest we'll accept updates (milliseconds)
+        private const val FASTEST_UPDATE_INTERVAL = 1000L  // 1 second
+
+        // Only update if moved this many meters
+        private const val MINIMUM_DISPLACEMENT = 5f  // 5 meters
+
+        // Default zoom level for map
+        private const val MAP_ZOOM_LEVEL = 16f
     }
 
-    // Shared ViewModel
-    private val viewModel: TaxiMeterViewModel by activityViewModels()
 
-    // Google Maps
+    // ===========================================
+    // VARIABLES
+    // ===========================================
+
+    // ViewModel (shared with MainActivity)
+    // "by activityViewModels()" gets the SAME ViewModel as MainActivity
+    private val taxiViewModel: TaxiMeterViewModel by activityViewModels()
+
+    // Google Map object
     private var googleMap: GoogleMap? = null
 
-    // Location services
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private lateinit var locationCallback: LocationCallback
+    // Location client (provides GPS updates)
+    private lateinit var locationClient: FusedLocationProviderClient
 
-    // UI Elements
-    private lateinit var tvDistance: TextView
-    private lateinit var tvTime: TextView
-    private lateinit var tvFare: TextView
-    private lateinit var btnStartStop: Button
-    private lateinit var btnProfile: Button
+    // Location callback (receives GPS updates)
+    private lateinit var locationUpdateCallback: LocationCallback
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        Log.d(TAG, "onCreateView called")
+    // UI Elements (views from XML)
+    private lateinit var textViewDistance: TextView
+    private lateinit var textViewTime: TextView
+    private lateinit var textViewFare: TextView
+    private lateinit var buttonStartStop: Button
+    private lateinit var buttonProfile: Button
+
+
+    // ===========================================
+    // LIFECYCLE METHODS
+    // ===========================================
+
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        Log.d(TAG, "Creating view from XML")
+
+        // Inflate the XML layout into a View object
         return inflater.inflate(R.layout.fragment_taxi_meter, container, false)
     }
 
+    /**
+     * onViewCreated() is called after the view is created
+     * This is where we set up everything
+     *
+     * @param view The view we created
+     * @param savedInstanceState Previous state (if any)
+     */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.d(TAG, "onViewCreated called")
+
+        Log.d(TAG, "View created, setting up...")
 
         try {
-            // Initialize UI elements
-            initializeViews(view)
+            // Step 1: Find all UI elements
+            findAllViews(view)
 
-            // Initialize location services
-            fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+            // Step 2: Set up Google Maps
+            setupGoogleMap()
 
-            // Setup Google Maps
-            setupMap()
+            // Step 3: Set up location client
+            setupLocationClient()
 
-            // Setup location callback
+            // Step 4: Set up location callback
             setupLocationCallback()
 
-            // Observe ViewModel
+            // Step 5: Watch ViewModel for changes
             observeViewModel()
 
-            // Setup buttons
-            setupButtons()
+            // Step 6: Set up button click listeners
+            setupButtonClickListeners()
 
-            Log.d(TAG, "Fragment setup completed successfully")
+            Log.d(TAG, "Setup complete!")
+            Toast.makeText(context, "Ready!", Toast.LENGTH_SHORT).show()
 
-        } catch (e: Exception) {
-            Log.e(TAG, "Error in onViewCreated", e)
-            Toast.makeText(context, "Erreur: ${e.message}", Toast.LENGTH_LONG).show()
+        } catch (error: Exception) {
+            Log.e(TAG, "Error during setup", error)
+            Toast.makeText(context, "Error: ${error.message}", Toast.LENGTH_LONG).show()
         }
     }
 
-    /**
-     * Initialize all view references
-     */
-    private fun initializeViews(view: View) {
-        tvDistance = view.findViewById(R.id.tvDistance)
-        tvTime = view.findViewById(R.id.tvTime)
-        tvFare = view.findViewById(R.id.tvFare)
-        btnStartStop = view.findViewById(R.id.btnStartStop)
-        btnProfile = view.findViewById(R.id.btnProfile)
+
+    // ===========================================
+    // SETUP METHODS
+    // ===========================================
+
+    private fun findAllViews(view: View) {
+        Log.d(TAG, "Finding all views...")
+
+        textViewDistance = view.findViewById(R.id.tvDistance)
+        textViewTime = view.findViewById(R.id.tvTime)
+        textViewFare = view.findViewById(R.id.tvFare)
+        buttonStartStop = view.findViewById(R.id.btnStartStop)
+        buttonProfile = view.findViewById(R.id.btnProfile)
+
+        Log.d(TAG, "All views found")
     }
 
     /**
-     * Setup Google Maps
+     * Set up Google Maps
+     *
+     * Maps are loaded in a separate Fragment (SupportMapFragment)
+     * We find it and tell it to notify us when the map is ready
      */
-    private fun setupMap() {
+    private fun setupGoogleMap() {
+        Log.d(TAG, "Setting up Google Maps...")
+
+        // Find the map fragment
         val mapFragment = childFragmentManager.findFragmentById(R.id.mapView) as? SupportMapFragment
+
+        // Request map asynchronously
+        // When ready, onMapReady() will be called
         mapFragment?.getMapAsync(this)
     }
 
     /**
-     * Called when Google Map is ready
+     * Set up location client
+     *
+     * This client provides GPS location updates
+     */
+    private fun setupLocationClient() {
+        Log.d(TAG, "Setting up location client...")
+
+        locationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+
+        Log.d(TAG, "Location client ready")
+    }
+
+    /**
+     * Set up location callback
+     *
+     * This callback is called whenever we receive a new GPS location
+     */
+    private fun setupLocationCallback() {
+        Log.d(TAG, "Setting up location callback...")
+
+        locationUpdateCallback = object : LocationCallback() {
+            /**
+             * Called when new location is available
+             */
+            override fun onLocationResult(locationResult: LocationResult) {
+                // Get the latest location
+                val newLocation = locationResult.lastLocation
+
+                if (newLocation != null) {
+                    Log.d(TAG, "New location: ${newLocation.latitude}, ${newLocation.longitude}")
+
+                    // Update map camera
+                    updateMapCamera(newLocation)
+
+                    // Send location to ViewModel
+                    taxiViewModel.updateLocation(newLocation)
+                } else {
+                    Log.w(TAG, "Received null location")
+                }
+            }
+        }
+
+        Log.d(TAG, "Location callback ready")
+    }
+
+    /**
+     * Observe ViewModel changes
+     *
+     * "Observe" means "watch for changes"
+     * Whenever ViewModel data changes, update the UI
+     *
+     * This is the "LiveData Observer Pattern"
+     */
+    private fun observeViewModel() {
+        Log.d(TAG, "Setting up observers...")
+
+        // Watch distance changes
+        taxiViewModel.distanceInKm.observe(viewLifecycleOwner) { distance ->
+            // When distance changes, update the text
+            textViewDistance.text = taxiViewModel.getDistanceText()
+        }
+
+        // Watch time changes
+        taxiViewModel.timeInSeconds.observe(viewLifecycleOwner) { time ->
+            // When time changes, update the text
+            textViewTime.text = taxiViewModel.getTimeText()
+        }
+
+        // Watch fare changes
+        taxiViewModel.totalFare.observe(viewLifecycleOwner) { fare ->
+            // When fare changes, update the text
+            textViewFare.text = taxiViewModel.getFareText()
+        }
+
+        // Watch ride active status
+        taxiViewModel.isRideActive.observe(viewLifecycleOwner) { isActive ->
+            // Update button appearance
+            updateButtonAppearance(isActive)
+
+            // Start or stop location updates
+            if (isActive) {
+                startReceivingLocationUpdates()
+            } else {
+                stopReceivingLocationUpdates()
+            }
+        }
+
+        Log.d(TAG, "Observers set up")
+    }
+
+    /**
+     * Set up button click listeners
+     *
+     * Define what happens when user clicks buttons
+     */
+    private fun setupButtonClickListeners() {
+        Log.d(TAG, "Setting up button listeners...")
+
+        // Start/Stop button
+        buttonStartStop.setOnClickListener {
+            // Check if ride is currently active
+            val isRideActive = taxiViewModel.isRideActive.value ?: false
+
+            if (isRideActive) {
+                // Ride is active -> Stop it
+                handleStopButtonClick()
+            } else {
+                // Ride is not active -> Start it
+                handleStartButtonClick()
+            }
+        }
+
+        // Profile button
+        buttonProfile.setOnClickListener {
+            handleProfileButtonClick()
+        }
+
+        Log.d(TAG, "Button listeners set up")
+    }
+
+
+    // ===========================================
+    // GOOGLE MAPS CALLBACK
+    // ===========================================
+
+    /**
+     * Called when Google Map is ready to use
+     *
+     * This is where we configure the map settings
+     *
+     * @SuppressLint("MissingPermission") tells Android Studio
+     * "I know I need permission, but I already checked it elsewhere"
      */
     @SuppressLint("MissingPermission")
     override fun onMapReady(map: GoogleMap) {
-        Log.d(TAG, "Map is ready")
+        Log.d(TAG, "Google Map is ready!")
+
+        // Save reference to map
         googleMap = map
 
-        // Configure map settings
+        // Configure map UI
         googleMap?.apply {
-            uiSettings.isZoomControlsEnabled = true
-            uiSettings.isMyLocationButtonEnabled = true
-            uiSettings.isCompassEnabled = true
+            uiSettings.isZoomControlsEnabled = true  // Show +/- zoom buttons
+            uiSettings.isMyLocationButtonEnabled = true  // Show "my location" button
+            uiSettings.isCompassEnabled = true  // Show compass
         }
 
+        // Check if we have permission
         if (hasLocationPermission()) {
             try {
+                // Enable the blue dot showing user location
                 googleMap?.isMyLocationEnabled = true
 
-                // Get last known location and move camera
-                fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                    location?.let {
-                        val currentLatLng = LatLng(it.latitude, it.longitude)
-                        googleMap?.animateCamera(
-                            CameraUpdateFactory.newLatLngZoom(currentLatLng, DEFAULT_ZOOM)
-                        )
-                        Log.d(TAG, "Camera moved to: ${it.latitude}, ${it.longitude}")
-                    } ?: run {
-                        // Default to Rabat, Morocco if no location
-                        val rabat = LatLng(33.9716, -6.8498)
-                        googleMap?.animateCamera(
-                            CameraUpdateFactory.newLatLngZoom(rabat, 12f)
-                        )
-                        Log.d(TAG, "No location available, showing Rabat")
-                    }
-                }
-            } catch (e: SecurityException) {
-                Log.e(TAG, "Location permission error", e)
-                Toast.makeText(context, "Erreur de permission", Toast.LENGTH_SHORT).show()
+                // Move camera to user's last known location
+                moveToLastKnownLocation()
+
+            } catch (error: SecurityException) {
+                Log.e(TAG, "Security exception", error)
+                Toast.makeText(context, "Permission error", Toast.LENGTH_SHORT).show()
             }
         } else {
-            Log.w(TAG, "Location permission not granted")
-            Toast.makeText(context, "Permission de localisation requise", Toast.LENGTH_SHORT).show()
+            Log.w(TAG, "No location permission")
+            Toast.makeText(context, "Location permission needed", Toast.LENGTH_SHORT).show()
         }
     }
 
     /**
-     * Setup location updates callback
+     * Move map camera to last known location
      */
-    private fun setupLocationCallback() {
-        locationCallback = object : LocationCallback() {
-            override fun onLocationResult(locationResult: LocationResult) {
-                locationResult.lastLocation?.let { location ->
-                    Log.d(TAG, "Location update: ${location.latitude}, ${location.longitude}")
-                    updateMapLocation(location)
-                    viewModel.updateLocation(location)
-                }
-            }
-        }
-    }
-
-    /**
-     * Update map with new location
-     */
-    private fun updateMapLocation(location: Location) {
-        val latLng = LatLng(location.latitude, location.longitude)
-        googleMap?.animateCamera(CameraUpdateFactory.newLatLng(latLng))
-    }
-
-    /**
-     * Observe ViewModel LiveData
-     */
-    private fun observeViewModel() {
-        viewModel.distance.observe(viewLifecycleOwner) {
-            tvDistance.text = viewModel.getFormattedDistance()
-        }
-
-        viewModel.elapsedTime.observe(viewLifecycleOwner) {
-            tvTime.text = viewModel.getFormattedTime()
-        }
-
-        viewModel.totalFare.observe(viewLifecycleOwner) {
-            tvFare.text = viewModel.getFormattedFare()
-        }
-
-        viewModel.isRideActive.observe(viewLifecycleOwner) { isActive ->
-            updateButtonState(isActive)
-            if (isActive) {
-                startLocationUpdates()
+    @SuppressLint("MissingPermission")
+    private fun moveToLastKnownLocation() {
+        locationClient.lastLocation.addOnSuccessListener { location ->
+            if (location != null) {
+                // We have a location - move camera there
+                val position = LatLng(location.latitude, location.longitude)
+                googleMap?.animateCamera(
+                    CameraUpdateFactory.newLatLngZoom(position, MAP_ZOOM_LEVEL)
+                )
+                Log.d(TAG, "Moved camera to: ${location.latitude}, ${location.longitude}")
             } else {
-                stopLocationUpdates()
+                // No location available - show Rabat, Morocco as default
+                val rabat = LatLng(33.9716, -6.8498)
+                googleMap?.animateCamera(
+                    CameraUpdateFactory.newLatLngZoom(rabat, 12f)
+                )
+                Log.d(TAG, "No location available, showing Rabat")
             }
         }
     }
 
     /**
-     * Setup button listeners
+     * Update map camera to follow new location
      */
-    private fun setupButtons() {
-        btnStartStop.setOnClickListener {
-            if (viewModel.isRideActive.value == true) {
-                stopRide()
-            } else {
-                startRide()
-            }
-        }
-
-        btnProfile.setOnClickListener {
-            Toast.makeText(context, "Profil du chauffeur (à implémenter)", Toast.LENGTH_SHORT).show()
-        }
+    private fun updateMapCamera(location: Location) {
+        val position = LatLng(location.latitude, location.longitude)
+        googleMap?.animateCamera(CameraUpdateFactory.newLatLng(position))
     }
 
+
+    // ===========================================
+    // BUTTON CLICK HANDLERS
+    // ===========================================
+
     /**
-     * Start the ride
+     * Handle Start button click
      */
-    private fun startRide() {
+    private fun handleStartButtonClick() {
+        Log.d(TAG, "Start button clicked")
+
+        // Check permission first
         if (!hasLocationPermission()) {
-            Toast.makeText(context, "Permission de localisation requise", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Location permission needed", Toast.LENGTH_SHORT).show()
             return
         }
 
-        viewModel.startRide()
-        Toast.makeText(context, "Course démarrée!", Toast.LENGTH_SHORT).show()
+        // Start the ride in ViewModel
+        taxiViewModel.startRide()
+
+        Toast.makeText(context, "Ride started!", Toast.LENGTH_SHORT).show()
     }
 
     /**
-     * Stop the ride
+     * Handle Stop button click
      */
-    private fun stopRide() {
-        viewModel.stopRide()
+    private fun handleStopButtonClick() {
+        Log.d(TAG, "Stop button clicked")
+
+        // Stop the ride in ViewModel
+        taxiViewModel.stopRide()
 
         // Send notification
-        context?.let {
-            NotificationHelper.sendRideCompletedNotification(it, viewModel.getRideSummary())
+        context?.let { ctx ->
+            NotificationHelper.sendRideCompletedNotification(
+                ctx,
+                taxiViewModel.getRideSummary()
+            )
         }
 
+        // Show summary
         Toast.makeText(
             context,
-            "Course terminée!\n${viewModel.getRideSummary()}",
+            "Ride ended!\n${taxiViewModel.getRideSummary()}",
             Toast.LENGTH_LONG
         ).show()
     }
 
     /**
-     * Update button state
+     * Handle Profile button click
      */
-    private fun updateButtonState(isActive: Boolean) {
-        if (isActive) {
-            btnStartStop.text = "Terminer la Course"
-            btnStartStop.setBackgroundColor(resources.getColor(android.R.color.holo_red_dark, null))
-        } else {
-            btnStartStop.text = "Démarrer la Course"
-            btnStartStop.setBackgroundColor(resources.getColor(android.R.color.holo_green_dark, null))
-        }
+    private fun handleProfileButtonClick() {
+        Log.d(TAG, "Profile button clicked")
+        Toast.makeText(context, "Driver profile (coming soon)", Toast.LENGTH_SHORT).show()
     }
 
+
+    // ===========================================
+    // LOCATION UPDATES
+    // ===========================================
+
     /**
-     * Start receiving location updates
+     * Start receiving location updates from GPS
+     *
+     * @SuppressLint("MissingPermission") - we already checked permission
      */
     @SuppressLint("MissingPermission")
-    private fun startLocationUpdates() {
-        if (!hasLocationPermission()) return
+    private fun startReceivingLocationUpdates() {
+        // Check permission
+        if (!hasLocationPermission()) {
+            return
+        }
 
+        Log.d(TAG, "Starting location updates...")
+
+        // Create location request settings
         val locationRequest = LocationRequest.create().apply {
-            interval = UPDATE_INTERVAL
-            fastestInterval = FASTEST_INTERVAL
-            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+            interval = LOCATION_UPDATE_INTERVAL  // How often to request
+            fastestInterval = FASTEST_UPDATE_INTERVAL  // Max speed to accept
+            priority = LocationRequest.PRIORITY_HIGH_ACCURACY  // Use GPS
+            smallestDisplacement = MINIMUM_DISPLACEMENT  // Min distance to update
         }
 
         try {
-            fusedLocationClient.requestLocationUpdates(
+            // Start receiving updates
+            locationClient.requestLocationUpdates(
                 locationRequest,
-                locationCallback,
-                Looper.getMainLooper()
+                locationUpdateCallback,
+                Looper.getMainLooper()  // Receive on main thread
             )
+
             Log.d(TAG, "Location updates started")
-        } catch (e: SecurityException) {
-            Log.e(TAG, "Error starting location updates", e)
+
+        } catch (error: SecurityException) {
+            Log.e(TAG, "Error starting location updates", error)
         }
     }
 
     /**
      * Stop receiving location updates
      */
-    private fun stopLocationUpdates() {
-        fusedLocationClient.removeLocationUpdates(locationCallback)
+    private fun stopReceivingLocationUpdates() {
+        Log.d(TAG, "Stopping location updates...")
+
+        locationClient.removeLocationUpdates(locationUpdateCallback)
+
         Log.d(TAG, "Location updates stopped")
     }
 
+
+    // ===========================================
+    // UI UPDATES
+    // ===========================================
+
     /**
-     * Check if location permission is granted
+     * Update button appearance based on ride status
+     *
+     * @param isRideActive true if ride is ongoing, false if stopped
+     */
+    private fun updateButtonAppearance(isRideActive: Boolean) {
+        if (isRideActive) {
+            // Ride is active - show "Stop" button in red
+            buttonStartStop.text = "Stop Ride"
+            buttonStartStop.setBackgroundColor(
+                resources.getColor(android.R.color.holo_red_dark, null)
+            )
+        } else {
+            // Ride is not active - show "Start" button in green
+            buttonStartStop.text = "Start Ride"
+            buttonStartStop.setBackgroundColor(
+                resources.getColor(android.R.color.holo_green_dark, null)
+            )
+        }
+    }
+
+
+    // ===========================================
+    // PERMISSION CHECK
+    // ===========================================
+
+    /**
+     * Check if we have location permission
+     *
+     * @return true if we have permission, false otherwise
      */
     private fun hasLocationPermission(): Boolean {
         return EasyPermissions.hasPermissions(
@@ -310,23 +533,43 @@ class TaxiMeterFragment : Fragment(), OnMapReadyCallback {
         )
     }
 
+
+    // ===========================================
+    // LIFECYCLE - CLEANUP
+    // ===========================================
+
+    /**
+     * Called when fragment becomes visible
+     */
     override fun onResume() {
         super.onResume()
-        if (viewModel.isRideActive.value == true && hasLocationPermission()) {
-            startLocationUpdates()
+
+        // If ride is active and we have permission, resume updates
+        val isRideActive = taxiViewModel.isRideActive.value ?: false
+        if (isRideActive && hasLocationPermission()) {
+            startReceivingLocationUpdates()
         }
     }
 
+    /**
+     * Called when fragment is no longer visible
+     */
     override fun onPause() {
         super.onPause()
-        // Don't stop if ride is active
-        if (viewModel.isRideActive.value != true) {
-            stopLocationUpdates()
+
+        // Don't stop updates if ride is active
+        // (user might just switch apps temporarily)
+        val isRideActive = taxiViewModel.isRideActive.value ?: false
+        if (!isRideActive) {
+            stopReceivingLocationUpdates()
         }
     }
 
+    /**
+     * Called when view is destroyed
+     */
     override fun onDestroyView() {
         super.onDestroyView()
-        stopLocationUpdates()
+        stopReceivingLocationUpdates()
     }
 }

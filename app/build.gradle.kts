@@ -66,6 +66,10 @@ dependencies {
     implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
 
+    // Coroutines (for timer)
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.1")
+
     // Fragment KTX
     implementation("androidx.fragment:fragment-ktx:1.6.2")
 
