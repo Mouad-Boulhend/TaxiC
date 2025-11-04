@@ -95,7 +95,18 @@ class TaxiMeterFragment : Fragment(), OnMapReadyCallback {
     // LIFECYCLE METHODS
     // ===========================================
 
-
+    /**
+     * onCreateView() creates the view hierarchy
+     *
+     * Think of it like inflating a balloon:
+     * - We have a blueprint (XML file)
+     * - We inflate it to create the actual view
+     *
+     * @param inflater Tool to create views from XML
+     * @param container Parent view that will hold our fragment
+     * @param savedInstanceState Previous state (if any)
+     * @return The created view
+     */
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -152,6 +163,12 @@ class TaxiMeterFragment : Fragment(), OnMapReadyCallback {
     // SETUP METHODS
     // ===========================================
 
+    /**
+     * Find all UI elements by their IDs
+     *
+     * findViewById() looks up views by ID from XML
+     * We save references so we can update them later
+     */
     private fun findAllViews(view: View) {
         Log.d(TAG, "Finding all views...")
 
@@ -433,7 +450,17 @@ class TaxiMeterFragment : Fragment(), OnMapReadyCallback {
      */
     private fun handleProfileButtonClick() {
         Log.d(TAG, "Profile button clicked")
-        Toast.makeText(context, "Driver profile (coming soon)", Toast.LENGTH_SHORT).show()
+
+        // Create the profile fragment
+        val profileFragment = DriverProfileFragment()
+
+        // Navigate to profile screen
+        // addToBackStack() lets user press back button to return here
+        parentFragmentManager
+            .beginTransaction()
+            .replace(R.id.fragmentContainer, profileFragment)
+            .addToBackStack(null)  // Add to back stack
+            .commit()
     }
 
 

@@ -30,6 +30,8 @@ import kotlin.math.roundToInt
  */
 class TaxiMeterViewModel : ViewModel() {
 
+
+
     // ===========================================
     // CONSTANTS - Prices (in Moroccan Dirham)
     // ===========================================
@@ -89,14 +91,19 @@ class TaxiMeterViewModel : ViewModel() {
 
     init {
         // This runs when the ViewModel is first created
-        // Set up a sample driver (in real app, load from database)
-        _driverProfile.value = Driver(
-            firstName = "Mohammed",
-            lastName = "Alami",
-            age = 35,
-            licenseType = "Professional Driver License",
-            phoneNumber = "+212 6XX XXX XXX"
-        )
+        // We'll set the actual driver when MainActivity gets it from login
+    }
+
+    /**
+     * Set the logged-in driver
+     * Called by MainActivity after login
+     *
+     * @param driver The logged-in driver
+     */
+
+
+    fun setDriver(driver: Driver) {
+        _driverProfile.value = driver
     }
 
 

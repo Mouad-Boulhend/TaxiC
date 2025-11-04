@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.taxic.R
+import com.example.taxic.data.DriverDatabase
 import com.example.taxic.viewmodel.TaxiMeterViewModel
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
@@ -48,6 +49,9 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     // "by viewModels()" creates it automatically
     private val taxiViewModel: TaxiMeterViewModel by viewModels()
 
+    // The logged-in driver's username (passed from LoginActivity)
+    private var loggedInUsername: String? = null
+
 
     // ===========================================
     // LIFECYCLE METHODS
@@ -62,6 +66,14 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
         Log.d(TAG, "MainActivity created")
 
+        // Get the username from LoginActivity
+        loggedInUsername = intent.getStringExtra(LoginActivity.EXTRA_USERNAME)
+
+        Log.d(TAG, "Logged in as: $loggedInUsername")
+
+        // Load driver data into ViewModel
+        loadDriverData()
+
         // Set the layout from XML file
         setContentView(R.layout.activity_main)
 
@@ -74,6 +86,28 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
             // We don't have permission. Ask for it.
             Log.d(TAG, "Requesting permission")
             askForLocationPermission()
+        }
+    }
+
+    /**
+     * Load driver data from database into ViewModel
+     *
+     * This gets the logged-in driver's information
+     * and saves it in the ViewModel so all screens can access it
+     */
+    private fun loadDriverData() {
+        if (loggedInUsername != null) {
+            val driver = DriverDatabase.getDriverByUsername(loggedInUsername!!)
+
+            if (driver != null) {
+                // Set driver in ViewModel
+                taxiViewModel.setDriver(driver)
+                Log.d(TAG, "Driver loaded: ${driver.getFullName()}")
+            } else {
+                Log.e(TAG, "Driver not found for username: $loggedInUsername")
+            }
+        } else {
+            Log.e(TAG, "No username provided from LoginActivity")
         }
     }
 

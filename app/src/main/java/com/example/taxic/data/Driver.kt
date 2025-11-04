@@ -3,18 +3,39 @@ package com.example.taxic.data
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
-
+/**
+ * This class holds information about a taxi driver.
+ *
+ * Think of it like a form with fields:
+ * - First name
+ * - Last name
+ * - Age
+ * - etc.
+ *
+ * ALSO USED FOR LOGIN:
+ * - username: The driver's login username
+ * - password: The driver's login password
+ *
+ * @Parcelize lets us easily pass this data between screens
+ */
 @Parcelize
 data class Driver(
-    val firstName: String,
-    val lastName: String,
-    val age: Int,
-    val licenseType: String,
-    val phoneNumber: String,
-    val photoUrl: String? = null,
-    val carModel: String? = null,
-    val carPlate: String? = null,
-    val rating: Float = 5.0f
+    // Login credentials
+    val username: String,        // Example: "mohalami"
+    val password: String,        // Example: "pass123"
+
+    // Personal information
+    val firstName: String,       // Example: "Mohammed"
+    val lastName: String,        // Example: "Alami"
+    val age: Int,                // Example: 35
+    val licenseType: String,     // Example: "Professional Driver License"
+    val phoneNumber: String,     // Example: "+212 6XX XXX XXX"
+
+    // Optional information
+    val photoUrl: String? = null,      // Optional: Link to driver photo
+    val carModel: String? = null,      // Optional: "Toyota Corolla"
+    val carPlate: String? = null,      // Optional: "ABC-1234"
+    val rating: Float = 5.0f           // Driver rating (out of 5)
 ) : Parcelable {
 
     /**

@@ -40,14 +40,19 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".ui.LoginActivity"
             android:exported="true">
+            <!-- This makes LoginActivity the first screen -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Main Activity - Shown after login -->
+        <activity
+            android:name=".ui.MainActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
