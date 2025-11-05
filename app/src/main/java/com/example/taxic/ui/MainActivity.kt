@@ -130,17 +130,30 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     }
 
     /**
-     * Ask user for location permission
+     * Ask user for location permission AND notification permission
      *
-     * This shows a system dialog asking the user to allow location access
+     * This shows a system dialog asking the user to allow:
+     * - Location access (for GPS tracking)
+     * - Notifications (for ride completion alerts)
      */
     private fun askForLocationPermission() {
-        EasyPermissions.requestPermissions(
-            this,
-            "This app needs your location to track the taxi ride",
-            PERMISSION_REQUEST_CODE,
+        // List of permissions we need
+        val permissions = mutableListOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION
+        )
+
+        // Add notification permission for Android 13+ (API 33+)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            permissions.add(Manifest.permission.POST_NOTIFICATIONS)
+        }
+
+        // Request all permissions at once
+        EasyPermissions.requestPermissions(
+            this,
+            "This app needs location access to track rides and notification permission to alert you when rides end",
+            PERMISSION_REQUEST_CODE,
+            *permissions.toTypedArray()  // Convert list to array
         )
     }
 

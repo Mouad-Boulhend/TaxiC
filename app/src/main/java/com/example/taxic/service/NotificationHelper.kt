@@ -60,6 +60,19 @@ object NotificationHelper {
      * @param rideSummary Text to show in notification (distance, time, fare)
      */
     fun sendRideCompletedNotification(context: Context, rideSummary: String) {
+        // Check if we have notification permission (Android 13+)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            if (!hasNotificationPermission(context)) {
+                android.util.Log.w("NotificationHelper", "Notification permission not granted")
+                android.widget.Toast.makeText(
+                    context,
+                    "Notification permission not granted. Please enable in settings.",
+                    android.widget.Toast.LENGTH_LONG
+                ).show()
+                return
+            }
+        }
+
         // Step 1: Create notification channel (required for Android 8.0+)
         createNotificationChannelIfNeeded(context)
 
@@ -68,6 +81,25 @@ object NotificationHelper {
 
         // Step 3: Show the notification
         showNotification(context, notification)
+    }
+
+    /**
+     * Check if notification permission is granted
+     *
+     * @param context Application context
+     * @return true if we can show notifications, false otherwise
+     */
+    fun hasNotificationPermission(context: Context): Boolean {
+        return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            // Android 13+: Check if permission is granted
+            androidx.core.content.ContextCompat.checkSelfPermission(
+                context,
+                android.Manifest.permission.POST_NOTIFICATIONS
+            ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+        } else {
+            // Below Android 13: Always allowed
+            true
+        }
     }
 
 
@@ -161,9 +193,16 @@ object NotificationHelper {
             // Show the notification
             notificationManager.notify(NOTIFICATION_ID, notification)
 
+            android.util.Log.d("NotificationHelper", "Notification sent successfully")
+
         } catch (error: SecurityException) {
             // On Android 13+, user might deny notification permission
-            error.printStackTrace()
+            android.util.Log.e("NotificationHelper", "Permission denied", error)
+            android.widget.Toast.makeText(
+                context,
+                "Cannot show notification: Permission denied",
+                android.widget.Toast.LENGTH_SHORT
+            ).show()
         }
     }
 }
