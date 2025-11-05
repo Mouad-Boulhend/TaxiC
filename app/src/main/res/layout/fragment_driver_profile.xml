@@ -16,7 +16,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Driver Profile"
+            android:text="@string/driver_profile"
             android:textSize="28sp"
             android:textStyle="bold"
             android:textColor="@color/textLight"
@@ -226,7 +226,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Scan to get driver information"
+                    android:text="@string/scan_to_get_driver_information"
                     android:textSize="14sp"
                     android:textColor="@color/textSecondary"
                     android:layout_marginBottom="16dp" />
@@ -236,7 +236,7 @@
                     android:id="@+id/ivQRCode"
                     android:layout_width="300dp"
                     android:layout_height="300dp"
-                    android:contentDescription="Driver QR Code"
+                    android:contentDescription="@string/driver_qr_code"
                     android:background="#FFFFFF"
                     android:padding="8dp" />
 
@@ -248,7 +248,7 @@
             android:id="@+id/btnBack"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:text="Back to Taxi Meter"
+            android:text="@string/back_to_taxi_meter"
             android:textSize="18sp"
             android:textStyle="bold"
             android:textColor="@color/black"
