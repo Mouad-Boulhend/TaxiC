@@ -4,9 +4,9 @@
     <color name="taxi_yellow">#FFD700</color>
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
-    <color name="darkest">#FFFFFF</color>
-    <color name="textLight">#000000</color>
-    <color name="textSecondary">#666666</color>
+    <color name="darkest">#262626</color>
+    <color name="textLight">#FFFFFF</color>
+    <color name="textSecondary">#D1D1D1</color>
 
     <!-- Secondary Colors -->
     <color name="light_gray">#D3D3D3</color>

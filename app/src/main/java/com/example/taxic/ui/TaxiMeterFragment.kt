@@ -2,6 +2,8 @@ package com.example.taxic.ui
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.res.Configuration
+import android.content.res.Resources
 import android.location.Location
 import android.os.Bundle
 import android.os.Looper
@@ -10,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -23,6 +26,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
 import pub.devrel.easypermissions.EasyPermissions
 
 /**
@@ -88,7 +92,7 @@ class TaxiMeterFragment : Fragment(), OnMapReadyCallback {
     private lateinit var textViewTime: TextView
     private lateinit var textViewFare: TextView
     private lateinit var buttonStartStop: Button
-    private lateinit var buttonProfile: Button
+    private lateinit var buttonProfile: ImageView
 
 
     // ===========================================
@@ -319,6 +323,11 @@ class TaxiMeterFragment : Fragment(), OnMapReadyCallback {
         Log.d(TAG, "Button listeners set up")
     }
 
+    private fun isNightMode(): Boolean {
+        val nightModeFlags = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        return nightModeFlags == Configuration.UI_MODE_NIGHT_YES
+    }
+
 
     // ===========================================
     // GOOGLE MAPS CALLBACK
@@ -338,6 +347,19 @@ class TaxiMeterFragment : Fragment(), OnMapReadyCallback {
 
         // Save reference to map
         googleMap = map
+
+        try {
+            val styleRes = if (isNightMode()) R.raw.map_dark else R.raw.map_light
+            val success = map.setMapStyle(context?.let { MapStyleOptions.loadRawResourceStyle(it, styleRes) })
+
+            if (!success) {
+                Log.e("MapStyle", "Style parsing failed.")
+            }
+        } catch (e: Resources.NotFoundException) {
+            Log.e("MapStyle", "Can't find style. Error: ", e)
+        }
+
+        //googleMap?.setMapStyle(context?.let { MapStyleOptions.loadRawResourceStyle(it, R.raw.map_style) })
 
         // Configure map UI
         googleMap?.apply {
@@ -363,6 +385,16 @@ class TaxiMeterFragment : Fragment(), OnMapReadyCallback {
             Log.w(TAG, "No location permission")
             Toast.makeText(context, "Location permission needed", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+
+        val styleRes = if ((newConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
+            Configuration.UI_MODE_NIGHT_YES
+        ) R.raw.map_dark else R.raw.map_light
+
+        googleMap?.setMapStyle(context?.let { MapStyleOptions.loadRawResourceStyle(it, styleRes) })
     }
 
     /**
@@ -534,10 +566,10 @@ class TaxiMeterFragment : Fragment(), OnMapReadyCallback {
                 resources.getColor(android.R.color.holo_red_dark, null)
             )
         } else {
-            // Ride is not active - show "Start" button in green
+            // Ride is not active - show "Start" button in yellow
             buttonStartStop.text = "Start Ride"
             buttonStartStop.setBackgroundColor(
-                resources.getColor(android.R.color.holo_green_dark, null)
+                resources.getColor(R.color.taxi_yellow, null)
             )
         }
     }

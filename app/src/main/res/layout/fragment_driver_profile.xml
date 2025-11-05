@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="@color/darkest">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -19,7 +19,7 @@
             android:text="Driver Profile"
             android:textSize="28sp"
             android:textStyle="bold"
-            android:textColor="#000000"
+            android:textColor="@color/textLight"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="24dp" />
 
@@ -30,7 +30,7 @@
             android:layout_marginBottom="24dp"
             app:cardCornerRadius="12dp"
             app:cardElevation="4dp"
-            app:cardBackgroundColor="#FAFAFA">
+            app:cardBackgroundColor="@color/darkest">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -46,7 +46,7 @@
                     android:text="Mohammed Alami"
                     android:textSize="24sp"
                     android:textStyle="bold"
-                    android:textColor="#000000"
+                    android:textColor="@color/textLight"
                     android:layout_marginBottom="16dp" />
 
                 <!-- Age -->
@@ -61,7 +61,7 @@
                         android:layout_height="wrap_content"
                         android:text="Age:"
                         android:textSize="16sp"
-                        android:textColor="#666666" />
+                        android:textColor="@color/textSecondary" />
 
                     <TextView
                         android:id="@+id/tvDriverAge"
@@ -69,7 +69,7 @@
                         android:layout_height="wrap_content"
                         android:text="35"
                         android:textSize="16sp"
-                        android:textColor="#000000"
+                        android:textColor="@color/textLight"
                         android:textStyle="bold" />
                 </LinearLayout>
 
@@ -85,7 +85,7 @@
                         android:layout_height="wrap_content"
                         android:text="License:"
                         android:textSize="16sp"
-                        android:textColor="#666666" />
+                        android:textColor="@color/textSecondary" />
 
                     <TextView
                         android:id="@+id/tvDriverLicense"
@@ -94,7 +94,7 @@
                         android:layout_weight="1"
                         android:text="Professional"
                         android:textSize="16sp"
-                        android:textColor="#000000"
+                        android:textColor="@color/textLight"
                         android:textStyle="bold" />
                 </LinearLayout>
 
@@ -110,7 +110,7 @@
                         android:layout_height="wrap_content"
                         android:text="Phone:"
                         android:textSize="16sp"
-                        android:textColor="#666666" />
+                        android:textColor="@color/textSecondary" />
 
                     <TextView
                         android:id="@+id/tvDriverPhone"
@@ -118,7 +118,7 @@
                         android:layout_height="wrap_content"
                         android:text="+212 6XX XXX XXX"
                         android:textSize="16sp"
-                        android:textColor="#000000"
+                        android:textColor="@color/textLight"
                         android:textStyle="bold" />
                 </LinearLayout>
 
@@ -135,7 +135,7 @@
                         android:layout_height="wrap_content"
                         android:text="Car:"
                         android:textSize="16sp"
-                        android:textColor="#666666" />
+                        android:textColor="@color/textSecondary" />
 
                     <TextView
                         android:id="@+id/tvDriverCarModel"
@@ -143,7 +143,7 @@
                         android:layout_height="wrap_content"
                         android:text="Toyota Corolla"
                         android:textSize="16sp"
-                        android:textColor="#000000"
+                        android:textColor="@color/textLight"
                         android:textStyle="bold" />
                 </LinearLayout>
 
@@ -160,7 +160,7 @@
                         android:layout_height="wrap_content"
                         android:text="Plate:"
                         android:textSize="16sp"
-                        android:textColor="#666666" />
+                        android:textColor="@color/textSecondary" />
 
                     <TextView
                         android:id="@+id/tvDriverCarPlate"
@@ -168,7 +168,7 @@
                         android:layout_height="wrap_content"
                         android:text="ABC-1234"
                         android:textSize="16sp"
-                        android:textColor="#000000"
+                        android:textColor="@color/textLight"
                         android:textStyle="bold" />
                 </LinearLayout>
 
@@ -183,7 +183,7 @@
                         android:layout_height="wrap_content"
                         android:text="Rating:"
                         android:textSize="16sp"
-                        android:textColor="#666666" />
+                        android:textColor="@color/textSecondary" />
 
                     <TextView
                         android:id="@+id/tvDriverRating"
@@ -205,7 +205,7 @@
             android:layout_marginBottom="24dp"
             app:cardCornerRadius="12dp"
             app:cardElevation="4dp"
-            app:cardBackgroundColor="#FAFAFA">
+            app:cardBackgroundColor="@color/darkest">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -220,7 +220,7 @@
                     android:text="QR Code"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:textColor="#000000"
+                    android:textColor="@color/textLight"
                     android:layout_marginBottom="16dp" />
 
                 <TextView
@@ -228,7 +228,7 @@
                     android:layout_height="wrap_content"
                     android:text="Scan to get driver information"
                     android:textSize="14sp"
-                    android:textColor="#666666"
+                    android:textColor="@color/textSecondary"
                     android:layout_marginBottom="16dp" />
 
                 <!-- QR Code Image -->
@@ -251,8 +251,8 @@
             android:text="Back to Taxi Meter"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="#007BFF"
+            android:textColor="@color/black"
+            android:backgroundTint="@color/taxi_yellow"
             app:cornerRadius="12dp" />
 
     </LinearLayout>
