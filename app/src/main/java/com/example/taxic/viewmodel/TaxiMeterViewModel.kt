@@ -1,5 +1,6 @@
 package com.example.taxic.viewmodel
 
+import android.content.res.loader.ResourcesProvider
 import android.location.Location
 import android.os.Handler
 import android.os.Looper
@@ -351,9 +352,9 @@ class TaxiMeterViewModel : ViewModel() {
      * Returns a multi-line text with all ride info
      */
     fun getRideSummary(): String {
-        return "Distance: ${getDistanceText()}\n" +
-                "Time: ${getTimeText()}\n" +
-                "Total Fare: ${getFareText()}"
+        return ("Distance" + ": ${getDistanceText()}\n" +
+                "Time" + ": ${getTimeText()}\n" +
+                "Total Fare" + ": ${getFareText()}")
     }
 
 

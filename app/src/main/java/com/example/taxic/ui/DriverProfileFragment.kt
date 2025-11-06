@@ -97,7 +97,9 @@ class DriverProfileFragment : Fragment() {
                 generateAndShowQRCode(driver)
             } else {
                 Log.e(TAG, "No driver data available")
-                Toast.makeText(context, "No driver data available", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context,
+                    getString(R.string.no_driver_data_available),
+                    Toast.LENGTH_SHORT).show()
             }
 
             // Step 5: Setup back button
@@ -200,7 +202,7 @@ class DriverProfileFragment : Fragment() {
 
         } catch (error: Exception) {
             Log.e(TAG, "Error generating QR code", error)
-            Toast.makeText(context, "Error generating QR code", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, getString(R.string.error_generating_qr_code), Toast.LENGTH_SHORT).show()
         }
     }
 

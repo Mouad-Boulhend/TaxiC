@@ -17,9 +17,9 @@
     <!-- Driver Profile Screen -->
     <string name="profile_title">Driver Profile</string>
     <string name="name">Name</string>
-    <string name="age">Age</string>
+    <string name="age">Age:</string>
     <string name="license_type">License Type</string>
-    <string name="phone">Phone</string>
+    <string name="phone">Phone:</string>
     <string name="car_info">Car Information</string>
     <string name="qr_code_title">Driver QR Code</string>
     <string name="scan_qr">Scan to view information</string>
@@ -49,4 +49,24 @@
     <string name="driver_qr_code">Driver QR Code</string>
     <string name="back_to_taxi_meter">Back to TaxiC</string>
     <string name="start_the_ride">Start the Ride</string>
+    <string name="notification_permission_not_granted_please_enable_in_settings">Notification permission not granted. Please enable in settings.</string>
+    <string name="tap_to_see_details">Tap to see details</string>
+    <string name="cannot_show_notification_permission_denied">Cannot show notification: Permission denied</string>
+    <string name="no_driver_data_available">No driver data available</string>
+    <string name="error_generating_qr_code">Error generating QR code</string>
+    <string name="welcome">Welcome</string>
+    <string name="invalid_username_or_password">Invalid username or password</string>
+    <string name="rationale">This app needs location access to track rides and notification permission to alert you when rides end</string>
+    <string name="permission_granted">Permission granted! Starting app...</string>
+    <string name="permission_required">Permission Required</string>
+    <string name="rationale2">This app needs location permission to work. Please enable it in settings.</string>
+    <string name="go_to_settings">Go to Settings</string>
+    <string name="cancel">Cancel</string>
+    <string name="location_permission_is_needed_to_track_the_ride">Location permission is needed to track the ride</string>
+    <string name="location_permission_needed">Location permission needed</string>
+    <string name="ride_ended">Ride ended!</string>
+    <string name="licence">Licence:</string>
+    <string name="car">Car:</string>
+    <string name="plate">Plate:</string>
+    <string name="rating">Rating:</string>
 </resources>

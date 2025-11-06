@@ -134,7 +134,7 @@ class LoginActivity : AppCompatActivity() {
             // Show success message
             Toast.makeText(
                 this,
-                "Welcome, ${driver.getFullName()}!",
+                getString(R.string.welcome) + ", ${driver.getFullName()}!",
                 Toast.LENGTH_SHORT
             ).show()
 
@@ -145,7 +145,7 @@ class LoginActivity : AppCompatActivity() {
         } else {
             // Login failed
             Log.d(TAG, "Login failed - invalid credentials")
-            showError("Invalid username or password")
+            showError(getString(R.string.invalid_username_or_password))
         }
     }
 

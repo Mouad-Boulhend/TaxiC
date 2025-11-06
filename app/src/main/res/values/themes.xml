@@ -5,7 +5,9 @@
         <item name="colorPrimary">@color/taxi_yellow</item>
         <item name="colorOnPrimary">@color/light_gray</item>
 
-        <item name="android:statusBarColor">@color/taxi_yellow</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:windowTranslucentStatus">false</item>
         <item name="android:windowLightStatusBar">true</item>
     </style>
 

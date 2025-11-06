@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingBottom="30dp"
     android:background="#FFFFFF">
 
     <!-- Google Map Fragment -->
@@ -159,15 +160,15 @@
     <ImageView
         android:alpha="0.7"
         android:id="@+id/btnProfile"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
         android:padding="12dp"
         android:src="@drawable/user"
         android:background="@drawable/circle"
         android:backgroundTint="@color/taxi_yellow"
         android:layout_gravity="end"
         android:layout_margin="12dp"
-        android:translationY="45dp"
+        android:translationY="30dp"
         />
 
 

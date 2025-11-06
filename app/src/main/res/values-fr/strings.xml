@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TaxiC</string>
+
+    <!-- Permission Messages -->
+    <string name="permission_rationale">Cette application nécessite l\'accès à votre localisation pour calculer la distance et le tarif de la course.</string>
+
+    <!-- Taxi Meter Screen -->
+    <string name="taxi_meter">Compteur de taxi</string>
+    <string name="distance">Distance</string>
+    <string name="time">Temps</string>
+    <string name="fare">Tarif</string>
+    <string name="start_ride">Démarrer la course</string>
+    <string name="stop_ride">Arrêter la course</string>
+    <string name="driver_profile">Profil du chaufeur</string>
+
+    <!-- Driver Profile Screen -->
+    <string name="profile_title">Profil du chaufeur</string>
+    <string name="name">Nom</string>
+    <string name="age">Âge :</string>
+    <string name="license_type">Type de permis</string>
+    <string name="phone">Téléphone :</string>
+    <string name="car_info">Informations sur la voiture</string>
+    <string name="qr_code_title">Code QR du chaufeur</string>
+    <string name="scan_qr">Scannez pour voir les informations</string>
+
+    <!-- Notifications -->
+    <string name="ride_completed">Course terminée</string>
+    <string name="ride_summary">Résumé de la course</string>
+
+    <!-- General -->
+    <string name="back">Retour</string>
+    <string name="settings">Paramètres</string>
+    <string name="loading">Chargement…</string>
+
+    <!-- Error Messages -->
+    <string name="error_location">Impossible d\'obtenir la localisation</string>
+    <string name="error_map">Erreur lors du chargement de la carte</string>
+    <string name="error_permission">Autorisation requise</string>
+
+    <!-- Units -->
+    <string name="km">km</string>
+    <string name="minutes">min</string>
+    <string name="dh">DH</string>
+
+    <string name="username">Nom d\'utilisateur</string>
+    <string name="password">Mot de passe</string>
+    <string name="scan_to_get_driver_information">Scannez pour obtenir les informations du chaufeur</string>
+    <string name="driver_qr_code">Code QR du chaufeur</string>
+    <string name="back_to_taxi_meter">Retour à TaxiC</string>
+    <string name="start_the_ride">Commencer la course</string>
+    <string name="notification_permission_not_granted_please_enable_in_settings">Autorisation de notification non accordée. Veuillez l’activer dans les paramètres.</string>
+    <string name="tap_to_see_details">Appuyez pour voir les détails</string>
+    <string name="cannot_show_notification_permission_denied">Impossible d’afficher la notification : autorisation refusée</string>
+    <string name="no_driver_data_available">Aucune donnée du chaufeur disponible</string>
+    <string name="error_generating_qr_code">Erreur lors de la génération du code QR</string>
+    <string name="welcome">Bienvenue</string>
+    <string name="invalid_username_or_password">Nom d’utilisateur ou mot de passe invalide</string>
+    <string name="rationale">Cette application a besoin de l’accès à la localisation pour suivre les trajets et de l’autorisation de notification pour vous avertir lorsque les trajets se terminent.</string>
+    <string name="permission_granted">Autorisation accordée ! Démarrage de l\'application...</string>
+    <string name="permission_required">Autorisation requise</string>
+    <string name="rationale2">Cette application a besoin de la permission de localisation pour fonctionner. Veuillez l’activer dans les paramètres.</string>
+    <string name="go_to_settings">Aller aux paramètres</string>
+    <string name="cancel">Annuler</string>
+    <string name="location_permission_is_needed_to_track_the_ride">L\'autorisation de localisation est nécessaire pour suivre la course</string>
+    <string name="location_permission_needed">Autorisation de localisation requise</string>
+    <string name="ride_ended">Course terminée !</string>
+    <string name="licence">Permis :</string>
+    <string name="car">Voiture :</string>
+    <string name="plate">Plaque :</string>
+    <string name="rating">Note :</string>
+</resources>

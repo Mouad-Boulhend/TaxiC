@@ -5,12 +5,15 @@ import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.location.Location
+import android.os.Build
 import android.os.Bundle
 import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowInsets
+import android.view.WindowInsetsController
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -111,6 +114,20 @@ class TaxiMeterFragment : Fragment(), OnMapReadyCallback {
      * @param savedInstanceState Previous state (if any)
      * @return The created view
      */
+    fun toEnglishDigits(input: String): String {
+        return input
+            .replace('٠', '0')
+            .replace('١', '1')
+            .replace('٢', '2')
+            .replace('٣', '3')
+            .replace('٤', '4')
+            .replace('٥', '5')
+            .replace('٦', '6')
+            .replace('٧', '7')
+            .replace('٨', '8')
+            .replace('٩', '9')
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -154,13 +171,13 @@ class TaxiMeterFragment : Fragment(), OnMapReadyCallback {
             setupButtonClickListeners()
 
             Log.d(TAG, "Setup complete!")
-            Toast.makeText(context, "Ready!", Toast.LENGTH_SHORT).show()
 
         } catch (error: Exception) {
             Log.e(TAG, "Error during setup", error)
             Toast.makeText(context, "Error: ${error.message}", Toast.LENGTH_LONG).show()
         }
     }
+
 
 
     // ===========================================
@@ -200,6 +217,7 @@ class TaxiMeterFragment : Fragment(), OnMapReadyCallback {
         // Request map asynchronously
         // When ready, onMapReady() will be called
         mapFragment?.getMapAsync(this)
+
     }
 
     /**
@@ -262,19 +280,19 @@ class TaxiMeterFragment : Fragment(), OnMapReadyCallback {
         // Watch distance changes
         taxiViewModel.distanceInKm.observe(viewLifecycleOwner) { distance ->
             // When distance changes, update the text
-            textViewDistance.text = taxiViewModel.getDistanceText()
+            textViewDistance.text = toEnglishDigits(taxiViewModel.getDistanceText())
         }
 
         // Watch time changes
         taxiViewModel.timeInSeconds.observe(viewLifecycleOwner) { time ->
             // When time changes, update the text
-            textViewTime.text = taxiViewModel.getTimeText()
+            textViewTime.text = toEnglishDigits(taxiViewModel.getTimeText())
         }
 
         // Watch fare changes
         taxiViewModel.totalFare.observe(viewLifecycleOwner) { fare ->
             // When fare changes, update the text
-            textViewFare.text = taxiViewModel.getFareText()
+            textViewFare.text = toEnglishDigits(taxiViewModel.getFareText())
         }
 
         // Watch ride active status
@@ -363,9 +381,15 @@ class TaxiMeterFragment : Fragment(), OnMapReadyCallback {
 
         // Configure map UI
         googleMap?.apply {
-            uiSettings.isZoomControlsEnabled = true  // Show +/- zoom buttons
-            uiSettings.isMyLocationButtonEnabled = true  // Show "my location" button
-            uiSettings.isCompassEnabled = true  // Show compass
+            uiSettings.isZoomControlsEnabled = false        // remove zoom +/- buttons
+            uiSettings.isMyLocationButtonEnabled = false    // remove the blue "my location" button
+            uiSettings.isCompassEnabled = false             // remove compass
+            uiSettings.isMapToolbarEnabled = false          // remove Google map toolbar (navigation icons)
+            uiSettings.isIndoorLevelPickerEnabled = false   // remove indoor level picker
+            uiSettings.isScrollGesturesEnabled = true       // still allow scrolling
+            uiSettings.isRotateGesturesEnabled = true       // still allow rotation
+            uiSettings.isTiltGesturesEnabled = true         // still allow tilt
+            setPadding(60, 0, 0, 22)
         }
 
         // Check if we have permission
@@ -383,7 +407,8 @@ class TaxiMeterFragment : Fragment(), OnMapReadyCallback {
             }
         } else {
             Log.w(TAG, "No location permission")
-            Toast.makeText(context, "Location permission needed", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context,
+                getString(R.string.location_permission_needed), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -395,6 +420,14 @@ class TaxiMeterFragment : Fragment(), OnMapReadyCallback {
         ) R.raw.map_dark else R.raw.map_light
 
         googleMap?.setMapStyle(context?.let { MapStyleOptions.loadRawResourceStyle(it, styleRes) })
+
+
+
+        //if(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE){
+        //    googleMap?.setPadding(1000, 0, 0, 500)
+        //}else{
+        //    googleMap?.setPadding(60, 0, 0, 22)
+        //}
     }
 
     /**
@@ -442,14 +475,13 @@ class TaxiMeterFragment : Fragment(), OnMapReadyCallback {
 
         // Check permission first
         if (!hasLocationPermission()) {
-            Toast.makeText(context, "Location permission needed", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, getString(R.string.location_permission_needed), Toast.LENGTH_SHORT).show()
             return
         }
 
         // Start the ride in ViewModel
         taxiViewModel.startRide()
 
-        Toast.makeText(context, "Ride started!", Toast.LENGTH_SHORT).show()
     }
 
     /**
@@ -472,7 +504,7 @@ class TaxiMeterFragment : Fragment(), OnMapReadyCallback {
         // Show summary
         Toast.makeText(
             context,
-            "Ride ended!\n${taxiViewModel.getRideSummary()}",
+            getString(R.string.ride_ended)+"\n${taxiViewModel.getRideSummary()}",
             Toast.LENGTH_LONG
         ).show()
     }
@@ -561,13 +593,13 @@ class TaxiMeterFragment : Fragment(), OnMapReadyCallback {
     private fun updateButtonAppearance(isRideActive: Boolean) {
         if (isRideActive) {
             // Ride is active - show "Stop" button in red
-            buttonStartStop.text = "Stop Ride"
+            buttonStartStop.text = getString(R.string.stop_ride)
             buttonStartStop.setBackgroundColor(
                 resources.getColor(android.R.color.holo_red_dark, null)
             )
         } else {
             // Ride is not active - show "Start" button in yellow
-            buttonStartStop.text = "Start Ride"
+            buttonStartStop.text = getString(R.string.start_ride)
             buttonStartStop.setBackgroundColor(
                 resources.getColor(R.color.taxi_yellow, null)
             )
@@ -631,4 +663,8 @@ class TaxiMeterFragment : Fragment(), OnMapReadyCallback {
         super.onDestroyView()
         stopReceivingLocationUpdates()
     }
+
+
 }
+
+

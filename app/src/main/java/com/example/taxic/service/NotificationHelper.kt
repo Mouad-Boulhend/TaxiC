@@ -66,7 +66,7 @@ object NotificationHelper {
                 android.util.Log.w("NotificationHelper", "Notification permission not granted")
                 android.widget.Toast.makeText(
                     context,
-                    "Notification permission not granted. Please enable in settings.",
+                    context.applicationContext.getString(R.string.notification_permission_not_granted_please_enable_in_settings),
                     android.widget.Toast.LENGTH_LONG
                 ).show()
                 return
@@ -165,8 +165,8 @@ object NotificationHelper {
         // Build the notification
         return NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(android.R.drawable.ic_dialog_info)  // Icon (use your own icon in production)
-            .setContentTitle("Ride Completed")  // Title shown in bold
-            .setContentText("Tap to see details")  // Short text
+            .setContentTitle(context.applicationContext.getString(R.string.ride_completed))  // Title shown in bold
+            .setContentText(context.applicationContext.getString(R.string.tap_to_see_details))  // Short text
             .setStyle(
                 // BigTextStyle allows showing more text
                 NotificationCompat.BigTextStyle().bigText(rideSummary)
@@ -200,7 +200,7 @@ object NotificationHelper {
             android.util.Log.e("NotificationHelper", "Permission denied", error)
             android.widget.Toast.makeText(
                 context,
-                "Cannot show notification: Permission denied",
+                context.applicationContext.getString(R.string.cannot_show_notification_permission_denied),
                 android.widget.Toast.LENGTH_SHORT
             ).show()
         }

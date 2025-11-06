@@ -1,13 +1,22 @@
 package com.example.taxic.ui
 
 import android.Manifest
+import android.content.res.Configuration
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.view.WindowInsets
+import android.view.WindowInsetsController
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.updatePadding
 import com.example.taxic.R
 import com.example.taxic.data.DriverDatabase
 import com.example.taxic.viewmodel.TaxiMeterViewModel
@@ -66,7 +75,16 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Let your app draw behind the system bars (status & navigation)
+        // Make app draw behind system bars (removes white bar)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
+// Make bars transparent
+        window.statusBarColor = Color.TRANSPARENT
+        window.navigationBarColor = Color.TRANSPARENT
+
+
+        hideSystemBarsIfLandscape()
 
         Log.d(TAG, "MainActivity created")
 
@@ -78,14 +96,21 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         // Load driver data into ViewModel
         loadDriverData()
 
+        window.statusBarColor = android.graphics.Color.TRANSPARENT
+
         // Set the layout from XML file
         setContentView(R.layout.activity_main)
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        // Adjust top padding to avoid overlapping status bar
+        //val rootView = findViewById<View>(R.id.main) // your root layout
+        //ViewCompat.setOnApplyWindowInsetsListener(rootView) { view, insets ->
+        //    val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+        //    view.updatePadding(top = systemBars.top)
+        //    insets
+        //}
+
+
+
 
         // Check if we have location permission
         if (hasLocationPermission()) {
@@ -161,7 +186,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         // Request all permissions at once
         EasyPermissions.requestPermissions(
             this,
-            "This app needs location access to track rides and notification permission to alert you when rides end",
+            getString(R.string.rationale),
             PERMISSION_REQUEST_CODE,
             *permissions.toTypedArray()  // Convert list to array
         )
@@ -182,7 +207,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         Log.d(TAG, "Permissions granted: $perms")
 
         // Show success message
-        Toast.makeText(this, "Permission granted! Starting app...", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.permission_granted), Toast.LENGTH_SHORT).show()
 
         // Show the main screen
         showMainScreen()
@@ -197,21 +222,23 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     override fun onPermissionsDenied(requestCode: Int, perms: List<String>) {
         Log.d(TAG, "Permissions denied: $perms")
 
+
+
         // Check if user clicked "Don't ask again"
         if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
             // User permanently denied - show dialog to go to settings
             AppSettingsDialog.Builder(this)
-                .setTitle("Permission Required")
-                .setRationale("This app needs location permission to work. Please enable it in settings.")
-                .setPositiveButton("Go to Settings")
-                .setNegativeButton("Cancel")
+                .setTitle(getString(R.string.permission_required))
+                .setRationale(getString(R.string.rationale2))
+                .setPositiveButton(getString(R.string.go_to_settings))
+                .setNegativeButton(getString(R.string.cancel))
                 .build()
                 .show()
         } else {
             // User just denied, explain why we need it
             Toast.makeText(
                 this,
-                "Location permission is needed to track the ride",
+                getString(R.string.location_permission_is_needed_to_track_the_ride),
                 Toast.LENGTH_LONG
             ).show()
         }
@@ -275,4 +302,31 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
             Log.d(TAG, "Fragment already exists, not creating duplicate")
         }
     }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+
+        hideSystemBarsIfLandscape()
+    }
+
+    private fun hideSystemBarsIfLandscape() {
+        // Get current orientation
+        val orientation = resources.configuration.orientation
+
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            // LANDSCAPE - Hide bars
+            val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
+            windowInsetsController?.hide(WindowInsetsCompat.Type.statusBars())
+            windowInsetsController?.hide(WindowInsetsCompat.Type.navigationBars())
+            // Must be set
+            windowInsetsController.systemBarsBehavior =
+                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        } else {
+            // PORTRAIT - Show bars
+            val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
+            windowInsetsController?.show(WindowInsetsCompat.Type.statusBars())
+            windowInsetsController?.show(WindowInsetsCompat.Type.navigationBars())
+        }
+    }
 }
+
