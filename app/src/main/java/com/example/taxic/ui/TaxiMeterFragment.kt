@@ -389,7 +389,7 @@ class TaxiMeterFragment : Fragment(), OnMapReadyCallback {
             uiSettings.isScrollGesturesEnabled = true       // still allow scrolling
             uiSettings.isRotateGesturesEnabled = true       // still allow rotation
             uiSettings.isTiltGesturesEnabled = true         // still allow tilt
-            setPadding(60, 0, 0, 22)
+            setPadding(100, 0, 0, 102)
         }
 
         // Check if we have permission

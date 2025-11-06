@@ -79,9 +79,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         // Make app draw behind system bars (removes white bar)
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
-// Make bars transparent
-        window.statusBarColor = Color.TRANSPARENT
-        window.navigationBarColor = Color.TRANSPARENT
+
 
 
         hideSystemBarsIfLandscape()
