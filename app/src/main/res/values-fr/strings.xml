@@ -10,8 +10,8 @@
     <string name="distance">Distance</string>
     <string name="time">Temps</string>
     <string name="fare">Tarif</string>
-    <string name="start_ride">Démarrer la course</string>
-    <string name="stop_ride">Arrêter la course</string>
+    <string name="start_ride">Commencer</string>
+    <string name="stop_ride">Arrêter</string>
     <string name="driver_profile">Profil du chaufeur</string>
 
     <!-- Driver Profile Screen -->
@@ -48,7 +48,7 @@
     <string name="scan_to_get_driver_information">Scannez pour obtenir les informations du chaufeur</string>
     <string name="driver_qr_code">Code QR du chaufeur</string>
     <string name="back_to_taxi_meter">Retour à TaxiC</string>
-    <string name="start_the_ride">Commencer la course</string>
+    <string name="start_the_ride">Commencer</string>
     <string name="notification_permission_not_granted_please_enable_in_settings">Autorisation de notification non accordée. Veuillez l’activer dans les paramètres.</string>
     <string name="tap_to_see_details">Appuyez pour voir les détails</string>
     <string name="cannot_show_notification_permission_denied">Impossible d’afficher la notification : autorisation refusée</string>

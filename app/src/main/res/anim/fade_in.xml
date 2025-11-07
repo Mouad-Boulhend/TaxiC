@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    FADE IN
+
+    Used when: Map fragment appears when profile closes
+    Effect: Map gently fades in
+
+    File location: res/anim/fade_in.xml
+-->
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:duration="200">
+
+    <!--
+        Simple fade in:
+        - fromAlpha="0.5" means starts half transparent
+        - toAlpha="1.0" means ends fully visible
+
+        Subtle effect that doesn't distract
+    -->
+    <alpha
+        android:fromAlpha="0.5"
+        android:toAlpha="1.0" />
+
+</set>

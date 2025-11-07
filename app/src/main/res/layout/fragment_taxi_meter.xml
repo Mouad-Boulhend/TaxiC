@@ -28,6 +28,7 @@
         app:cardBackgroundColor="@color/darkest"
         android:layout_gravity="bottom"
         android:translationY="-100dp"
+        android:alpha="0.9"
         >
 
         <LinearLayout
@@ -57,13 +58,16 @@
                     android:id="@+id/tvFare"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:shadowColor="#FFD700"
-                    android:shadowDx="0"
-                    android:shadowDy="0"
-                    android:shadowRadius="2"
                     android:text="2.50 DH"
                     android:textColor="@color/taxi_yellow"
-                    android:textSize="36sp" />
+                    android:textSize="42sp"
+                    android:fontFamily="@font/segments"
+                    android:shadowColor="@color/taxi_yellow"
+                    android:shadowDx="0"
+                    android:shadowDy="0"
+                    android:shadowRadius="15"
+                    android:alpha="1.0"/>
+
             </LinearLayout>
 
             <!-- Stats Grid -->
@@ -94,10 +98,11 @@
                         android:id="@+id/tvDistance"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@font/segments"
                         android:shadowColor="@color/taxi_yellow"
                         android:shadowDx="0"
                         android:shadowDy="0"
-                        android:shadowRadius="1"
+                        android:shadowRadius="6"
                         android:text="0.00 km"
                         android:textColor="@color/taxi_yellow"
                         android:textSize="18sp" />
@@ -124,10 +129,11 @@
                         android:id="@+id/tvTime"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@font/segments"
                         android:shadowColor="@color/taxi_yellow"
                         android:shadowDx="0"
                         android:shadowDy="0"
-                        android:shadowRadius="1"
+                        android:shadowRadius="6"
                         android:text="00:00"
                         android:textColor="@color/taxi_yellow"
                         android:textSize="18sp" />

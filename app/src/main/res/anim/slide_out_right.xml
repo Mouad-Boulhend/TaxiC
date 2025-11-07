@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    SLIDE OUT TO RIGHT
+
+    Used when: Closing profile fragment (going back)
+    Effect: Profile slides out to right side of screen
+
+    File location: res/anim/slide_out_right.xml
+-->
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:duration="200">
+
+    <!--
+        Translate (move) the view:
+        - fromXDelta="0" means start at normal position
+        - toXDelta="100%p" means end at 100% to the RIGHT (off screen)
+
+        So it slides from center to right edge
+    -->
+    <translate
+        android:fromXDelta="0"
+        android:toXDelta="100%p"
+        android:interpolator="@android:anim/accelerate_interpolator" />
+
+    <!--
+        Fade out while sliding:
+        - fromAlpha="1.0" means fully visible
+        - toAlpha="0.0" means fully transparent
+    -->
+    <alpha
+        android:fromAlpha="1.0"
+        android:toAlpha="0.0" />
+
+</set>

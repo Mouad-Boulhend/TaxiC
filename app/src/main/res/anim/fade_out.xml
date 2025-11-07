@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    FADE OUT
+
+    Used when: Map fragment disappears when profile opens
+    Effect: Map gently fades out
+
+    File location: res/anim/fade_out.xml
+-->
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:duration="200">
+
+    <!--
+        Simple fade out:
+        - fromAlpha="1.0" means starts fully visible
+        - toAlpha="0.5" means ends half transparent
+
+        Subtle effect that doesn't distract
+    -->
+    <alpha
+        android:fromAlpha="1.0"
+        android:toAlpha="0.5" />
+
+</set>

@@ -5,15 +5,12 @@ import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.location.Location
-import android.os.Build
 import android.os.Bundle
 import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowInsets
-import android.view.WindowInsetsController
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -389,7 +386,7 @@ class TaxiMeterFragment : Fragment(), OnMapReadyCallback {
             uiSettings.isScrollGesturesEnabled = true       // still allow scrolling
             uiSettings.isRotateGesturesEnabled = true       // still allow rotation
             uiSettings.isTiltGesturesEnabled = true         // still allow tilt
-            setPadding(100, 0, 0, 102)
+            setPadding(150, 0, 0, 120)
         }
 
         // Check if we have permission
@@ -502,11 +499,11 @@ class TaxiMeterFragment : Fragment(), OnMapReadyCallback {
         }
 
         // Show summary
-        Toast.makeText(
-            context,
-            getString(R.string.ride_ended)+"\n${taxiViewModel.getRideSummary()}",
-            Toast.LENGTH_LONG
-        ).show()
+        //Toast.makeText(
+        //    context,
+        //    getString(R.string.ride_ended)+"\n${taxiViewModel.getRideSummary()}",
+        //    Toast.LENGTH_LONG
+        //).show()
     }
 
     /**
@@ -522,6 +519,12 @@ class TaxiMeterFragment : Fragment(), OnMapReadyCallback {
         // addToBackStack() lets user press back button to return here
         parentFragmentManager
             .beginTransaction()
+            .setCustomAnimations(
+                R.anim.slide_in_right,    // Profile enters from left
+                R.anim.fade_out,         // Map exits (fades)
+                R.anim.fade_in,          // Map enters (fades in) when back
+                R.anim.slide_out_right   // Profile exits to right when back
+            )
             .replace(R.id.fragmentContainer, profileFragment)
             .addToBackStack(null)  // Add to back stack
             .commit()
